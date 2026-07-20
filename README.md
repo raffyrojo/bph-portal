@@ -5,10 +5,11 @@ Multi-brand sales analytics dashboard built for Iontech, Inc.
 **Live**: [bph-portal.netlify.app](https://bph-portal.netlify.app)
 
 ## Quick Start
-1. Open `builds/bph_portal.html` in a browser
-2. Select a brand (UGREEN/1234, Logitech/5678, JBL/9999)
-3. Enter the PIN and click "Enter Dashboard"
-4. Admin access: click "Admin Access" on homepage, PIN: 3102
+1. Open `index.html` (or `bph_portal.html`) in a browser
+2. Select a brand and enter its PIN, then click "Enter Dashboard"
+3. Admin access is via the "Admin Access" link on the homepage
+
+> Note: brand and admin PINs are set inside the app and are not published here.
 
 ## Folder Structure
 ```

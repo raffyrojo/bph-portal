@@ -1,0 +1,7 @@
+# Sales data lives in cloud storage (Cloudflare R2), not Git — Phase 2
+data/
+*.xlsx
+# Personal / Cowork-only context and deliverables
+ABOUT ME/
+OUTPUTS/
+.DS_Store

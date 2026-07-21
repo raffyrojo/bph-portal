@@ -1,39 +1,46 @@
 # Common Workflows
 
-## Update Sales Data
-1. Place new Excel file(s) in `data/`
-2. Ask: "Process the new Excel files in data/ and update the embedded data in builds/bph_portal.html"
-3. Claude reads Excels, merges with existing data, recompresses, replaces B64 string
-4. Download from `builds/`, rename to `index.html`, deploy to Netlify
+## Update Sales Data (in-app — no local file needed)
+1. Open the live app: https://raffyrojo.github.io/bph-portal/
+2. Log in to a brand, click **Upload**, drop the new CSV/Excel (Replace or Append)
+3. Open **Admin Access** (admin PIN) → **Publish to GitHub (go live)**
+4. Paste your GitHub token → **Publish live**
+5. GitHub Pages redeploys in ~1 min. Works from any laptop.
+
+Token: fine-grained GitHub PAT, scoped to only `raffyrojo/bph-portal`, Contents: Read and write. Held in the browser only, never written into the app file. Optional "remember on this browser" for your own laptop.
+
+## Update Sales Data (with Claude — alternative)
+1. Give Claude the new Excel (attach it, or place in `data/`)
+2. Ask: "Merge the new Excel into the app data and publish it"
+3. Claude rebuilds the embedded B64 and commits `index.html` + `bph_portal.html` to `main`
+4. GitHub Pages redeploys in ~1 min
 
 ## Add a New Brand
-1. Ask: "Add brand ANKER with PIN 5555 to the default brands in builds/bph_portal.html"
-2. Claude edits the `/*BP_START*/` ... `/*BP_END*/` block
-3. Download and redeploy
+1. In the app: **Admin Access** → Add New Brand (name + PIN) → **Publish to GitHub**
+   (or ask Claude to edit the `/*BP_START*/` … `/*BP_END*/` block and publish)
 
 ## Change a PIN
-1. Ask: "Change UGREEN PIN to 8888 in the portal"
-2. Claude updates the PIN in the BP_START/BP_END block
-3. Download and redeploy
+1. In the app: **Admin Access** → edit the brand's PIN, or change the admin PIN → **Publish to GitHub**
+   (or ask Claude to update it and publish)
 
 ## Add a New Dashboard Feature
 1. Describe the feature in detail
 2. Claude reads context/architecture.md to understand the codebase
-3. Claude edits builds/bph_portal.html
-4. Always verify: balanced braces, balanced parens, file ends with </html>
+3. Claude edits `index.html` (keeps `bph_portal.html` in sync) and commits to `main`
+4. Always verify: balanced braces, balanced parens, `dc()` before every `new Chart()`, file ends with `</html>`
 
 ## Fix a Bug
 1. Describe the symptom (screenshot helps)
 2. Reference context/known-issues.md for common patterns
-3. Claude identifies the function, applies fix, verifies structure
+3. Claude identifies the function, applies the fix, verifies structure, commits
 
 ## Update Branding
-1. Place new logo file in the project root or context/
+1. Give Claude the new logo (attach or place in the project)
 2. Ask: "Replace the login logo with the new logo file"
-3. Claude base64-encodes the image and replaces the data URI in the HTML
+3. Claude base64-encodes the image, replaces the data URI, and publishes
 
-## Deploy to Netlify
-1. Download builds/bph_portal.html
-2. Rename to index.html
-3. Go to app.netlify.com → your site → Deploys → drag and drop
-4. Same URL, updated content
+## Deploy / Hosting
+- Live on **GitHub Pages** at https://raffyrojo.github.io/bph-portal/ (source: `main`, root).
+- Any commit to `main` — via the app's Publish, via Claude, or via GitHub's web editor — auto-redeploys in ~1 min.
+- The app serves `index.html`; `bph_portal.html` is kept as an identical copy. Publishing updates both.
+- Netlify is retired and no longer used.

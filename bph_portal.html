@@ -3,6 +3,7 @@
 <title>BrandPulse — Sales Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -310,10 +311,9 @@ td{padding:7px 8px;font-size:11px}
 <button class="mx" onclick="closeAdminLogin()">&#10005;</button>
 <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#1b2559,#2b5ea7);display:flex;align-items:center;justify-content:center;margin:0 auto 16px"><svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2"><path d="M10 2a3 3 0 00-3 3v2H5a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V9a2 2 0 00-2-2h-2V5a3 3 0 00-3-3z"/><circle cx="10" cy="12" r="1.5"/></svg></div>
 <h3 style="font-size:18px;font-weight:800;color:#1b2559;margin-bottom:4px">Admin Authentication</h3>
-<p style="font-size:12px;color:#7c849c;margin-bottom:24px">Enter admin PIN to manage brands</p>
-<input type="password" id="adminPinInput" class="login-input login-pin" maxlength="6" placeholder="&#8226;&#8226;&#8226;&#8226;" style="margin-bottom:12px" onkeydown="if(event.key==='Enter')verifyAdmin()">
-<div id="adminError" class="login-err" style="margin-bottom:12px">Invalid admin PIN</div>
-<button onclick="verifyAdmin()" class="login-cta">Authenticate</button>
+<p style="font-size:12px;color:#7c849c;margin-bottom:24px">Sign in with your authorized Google account</p>
+<div id="adminError" class="login-err" style="margin-bottom:12px;display:none">This Google account isn&#39;t authorized for admin.</div>
+<div id="gsiBtnWrap" style="display:flex;justify-content:center;min-height:44px"></div>
 </div></div>
 <div class="ov" id="adminMod"><div class="mod" style="width:420px">
 <button class="mx" onclick="closeAdmin()">&#10005;</button>
@@ -348,6 +348,8 @@ function savePins(){try{localStorage.setItem("brandPins",JSON.stringify(BRAND_PI
 var CURRENT_BRAND="";
 var ADMIN_PIN=(function(){try{return localStorage.getItem("adminPin")||/*AP_START*/"3102"/*AP_END*/;}catch(e){return/*AP_START2*/"3102"/*AP_END2*/;}})()
 var IS_ADMIN=false;
+var GOOGLE_CLIENT_ID="379062918765-er4rvptl2vl2tcdmveak7cq666ga7o45.apps.googleusercontent.com";
+var ADMIN_EMAILS=["raffyortega.rojo@gmail.com"];
 function saveAdminPin(p){ADMIN_PIN=p;try{localStorage.setItem("adminPin",p);}catch(e){}}
 /* === UTILITIES === */
 function esc(s){if(typeof s!=="string")return s;var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
@@ -364,7 +366,12 @@ var RC={"NCR":"#1b2559","CALABARZON":"#0ea5e9","Central Luzon":"#8b5cf6","North 
 var RPATHS={"North Luzon":"M223,232 L225,216 L226,189 L228,157 L230,135 L232,125 L234,106 L241,103 L248,109 L258,111 L264,117 L270,109 L271,135 L264,162 L262,189 L259,216 L251,242 L238,242 L229,242 Z","Central Luzon":"M223,242 L229,242 L238,242 L251,242 L256,269 L251,296 L246,304 L242,307 L235,312 L231,309 L227,301 L221,285 L218,269 L215,253 L218,242 L223,232 Z","NCR":"M242,307 L245,307 L246,312 L245,320 L244,324 L242,324 L240,323 L235,315 L235,312 Z","CALABARZON":"M242,324 L245,320 L246,312 L245,307 L246,304 L251,296 L260,318 L268,339 L275,350 L268,358 L256,366 L248,368 L243,363 L236,360 L234,350 L232,339 L235,324 L242,324 Z","Bicol":"M268,358 L275,350 L280,339 L287,350 L292,360 L300,371 L307,382 L309,395 L311,403 L317,419 L318,427 L307,425 L300,414 L292,403 L278,393 L268,376 L256,366 L268,358 Z","Visayas":"M265,462 L280,467 L282,505 L280,532 L270,537 L265,526 L264,500 L263,478 Z M282,532 L295,542 L297,569 L290,591 L280,596 L278,585 L280,564 L281,542 Z M309,510 L317,526 L314,548 L309,572 L306,591 L300,596 L297,585 L302,564 L304,537 L307,521 Z M324,478 L334,457 L329,430 L341,430 L348,467 L341,500 L341,521 L341,548 L336,564 L329,553 L324,526 L322,510 L324,494 Z M313,567 L322,569 L326,583 L319,591 L312,585 L311,577 Z","Mindanao":"M353,618 L366,628 L370,660 L373,682 L366,719 L361,751 L353,778 L346,789 L334,773 L322,751 L312,730 L297,725 L273,741 L268,725 L280,709 L292,682 L304,671 L322,660 L331,644 L336,634 L346,618 L353,612 Z"};
 
 
-function openAdminLogin(){document.getElementById("adminLoginMod").classList.add("show");document.getElementById("adminPinInput").value="";document.getElementById("adminError").style.display="none";setTimeout(function(){document.getElementById("adminPinInput").focus();},100);}
+function openAdminLogin(){document.getElementById("adminLoginMod").classList.add("show");document.getElementById("adminError").style.display="none";renderGsi();}
+function _b64url(s){s=s.replace(/-/g,"+").replace(/_/g,"/");var p=s.length%4;if(p)s+=new Array(5-p).join("=");return atob(s);}
+function _jwtInfo(cred){try{var o=JSON.parse(decodeURIComponent(escape(_b64url(cred.split(".")[1]))));return{email:(o.email||"").toLowerCase(),verified:o.email_verified,aud:o.aud};}catch(e){return null;}}
+function handleGoogleCredential(resp){var info=_jwtInfo(resp.credential);if(info&&info.verified&&info.aud===GOOGLE_CLIENT_ID&&ADMIN_EMAILS.indexOf(info.email)>=0){IS_ADMIN=true;closeAdminLogin();openAdmin();}else{var em=document.getElementById("adminError");if(em)em.style.display="block";toast("Not an authorized admin account.","err");try{google.accounts.id.disableAutoSelect();}catch(e){}}}
+var _gsiInit=false;
+function renderGsi(){if(typeof google==="undefined"||!google.accounts||!google.accounts.id){setTimeout(renderGsi,300);return;}if(!_gsiInit){google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});_gsiInit=true;}var w=document.getElementById("gsiBtnWrap");if(w){w.innerHTML="";google.accounts.id.renderButton(w,{theme:"filled_blue",size:"large",text:"signin_with",shape:"pill",width:240});}}
 function closeAdminLogin(){document.getElementById("adminLoginMod").classList.remove("show");}
 function verifyAdmin(){var pin=document.getElementById("adminPinInput").value;if(pin===ADMIN_PIN){IS_ADMIN=true;closeAdminLogin();openAdmin();}else{var em=document.getElementById("adminError");em.style.display="block";var pi=document.getElementById("adminPinInput");pi.value="";pi.focus();pi.classList.remove("shake");void pi.offsetWidth;pi.classList.add("shake");}}
 function changeAdminPin(){if(!IS_ADMIN)return;var p=document.getElementById("newAdminPin").value.trim();if(!p||p.length<4){toast("PIN must be at least 4 characters.","err");return;}saveAdminPin(p);document.getElementById("newAdminPin").value="";var msg=document.getElementById("adminPinMsg");msg.textContent="Admin PIN updated successfully.";msg.style.display="block";setTimeout(function(){msg.style.display="none";},3000);}

@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.2.0 (July 2026) — In-App Publish to GitHub
+
+### Features
+- "Publish to GitHub" in the admin panel: update data from any browser and commit live, no local file needed
+- Uploads new Excel in-app → rebuilds embedded data → commits `index.html` + `bph_portal.html` to `main` in one commit via the GitHub Git Data API (blob → tree → commit → ref), robust past 1 MB file size
+- Fine-grained token entered per session (in-memory), with optional "remember on this browser"; token is never written into the app file
+- Refactored `saveAndDownload()` to share a single `_buildPortalHtml()` builder (Save & Download behavior unchanged)
+
+### Hosting
+- Migrated from Netlify to GitHub Pages (raffyrojo.github.io/bph-portal); README and workflow docs updated to match
+
+---
+
 ## v1.1.0 (April 2026) — Audit & Hardening
 
 ### Security

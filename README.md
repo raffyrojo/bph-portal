@@ -2,7 +2,7 @@
 
 Multi-brand sales analytics dashboard built for Iontech, Inc.
 
-**Live**: [bph-portal.netlify.app](https://bph-portal.netlify.app)
+**Live**: [raffyrojo.github.io/bph-portal](https://raffyrojo.github.io/bph-portal/)
 
 ## Quick Start
 1. Open `index.html` (or `bph_portal.html`) in a browser
@@ -39,4 +39,4 @@ bph-portal/
 - Gzip compression via browser-native DecompressionStream/CompressionStream
 
 ## Self-Service Workflow
-Upload new data → Save File → Deploy to Netlify. No developer needed.
+Update the app → edit index.html on GitHub (keep bph_portal.html in sync) → commit to main → GitHub Pages auto-deploys in ~1 min. No developer needed.
